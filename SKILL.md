@@ -30,9 +30,17 @@ This package deliberately has no such commands.
    `agentmarket` addresses. The packaged `deployments/56.json` is the deployed
    BSC book; a custom book that omits these fails with `NFT_NOT_CONFIGURED`
    rather than using the zero address.
+7. Agent ID eligibility. Under the default canonical policy, the wallet that
+   receives an NFT and the buyer must have `eligibility.eligible == true` and
+   the `agent id eligible` check must be `ok`. Creating a collection does not
+   require an Agent ID. A custom collection policy may differ; read its
+   `collection info` policy first. If the wallet is not eligible, claim an Agent
+   ID or switch to an eligible wallet; see README "Before you start" and the
+   [Binance Agentic Wallet skill](https://github.com/binance/binance-skills-hub/blob/main/skills/binance-web3/binance-agentic-wallet/SKILL.md).
 
 Run `agentmarket doctor --json` first. If `healthy` is false, read `checks`,
-`warnings`, and `baw.error` before trying any write flow.
+`warnings`, and `baw.error` before trying any write flow. `healthy: true` alone
+does not prove Agent ID eligibility; check `eligibility.eligible`.
 
 ## Invocation
 
@@ -103,8 +111,24 @@ object from stdout.
    ```
 
 5. If the result is `PENDING_CONFIRMATION`, ask the user to confirm in the
-   Binance App, then query `agentmarket tx status --tx-hash <hash>` once a hash
-   is available.
+   Binance App. Obtain the txHash from the App record or BAW transaction
+   history.
+6. `executed: true` only means BAW accepted the request. `BROADCASTED` may not
+   be mined. Poll `agentmarket tx status --tx-hash <txHash> --json` until
+   `SUCCESS`, or check that the BscScan receipt status is `1`. Stop on `FAILED`
+   or an unknown status; do not run the next command.
+7. After success, check the business result before the next command:
+   - create: `collection info` returns `isRegistered: true` and the expected
+     creator;
+   - mint: `nft info` owner is the recipient; `collection info` totalMinted
+     increased;
+   - approve: `nft info` shows the expected approval state;
+   - list: `market status` shows `active: true`, seller, and price;
+   - cancel: `market status` shows `active: false`;
+   - buy: `nft info` owner is the buyer.
+
+`--order-id` reads only the local journal. Without a txHash it does not discover
+a new hash or become a live chain status; use `--tx-hash`.
 
 Never invent or reuse a requestId. The local journal binds it to the chain,
 wallet, target, calldata hash, and a single use. A requestId copied from another
@@ -124,19 +148,37 @@ agentmarket collection create \
 ```
 
 - `--max-supply` must be greater than zero.
-- `--metadata-uri` is required: the collection-level metadata JSON.
+- `--metadata-uri` is required: the URI of the collection-level metadata JSON.
+  The chain stores the URI string, not the JSON.
 - At least one of `--base-uri` or `--resolver` is required. A resolver must be a
   contract implementing `tokenURI(collection, tokenId)`; a resolver-only
   collection may omit `--base-uri`. If both are set, the resolver takes
   precedence.
 - `--policy` is optional. Omitted means the factory resolves the policy
   registry's current policy (calldata contains address zero).
-- The new collection address is emitted by `CollectionCreated` after execution.
-  It is not in the preview. Read it from the transaction receipt in a BSC
-  explorer or an indexer.
 
-After creating the collection, use `collection info` with the emitted address to
-confirm the registry record before minting.
+After success, read `CollectionCreated.nft` from the receipt. In BscScan, open
+the transaction and expand the `CollectionCreated` log from the factory address;
+copy the `nft` argument. If you process raw logs, filter by the factory address
+and decode with the `AgenticNFTFactory` ABI; `nft` is the first indexed argument.
+A decoded example:
+
+```json
+{
+  "event": "CollectionCreated",
+  "args": {
+    "nft": "0x...",
+    "creator": "0x...",
+    "policy": "0x...",
+    "maxSupply": "100",
+    "metadataResolver": "0x..."
+  }
+}
+```
+
+Then run `collection info` with the emitted address and confirm
+`isRegistered: true`, the expected creator, and the expected policy before
+minting.
 
 ## Minting
 
@@ -174,7 +216,7 @@ agentmarket market list --collection <collection> --token-id 0 --price 0.5 \
 ```
 
 `--price` is human BNB and is converted to wei by the CLI. `--deadline` is a Unix
-timestamp; omit it for no expiry.
+timestamp in seconds; omit it for no expiry.
 
 The CLI checks, in order:
 

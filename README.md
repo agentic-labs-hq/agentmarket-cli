@@ -57,6 +57,13 @@ If you use the source path, replace `agentmarket` with `node dist/cli.js` in the
 examples below. `preview.nextCommand` also contains `agentmarket`; replace it the
 same way, and run the command from the repository root.
 
+### Upgrade
+
+- Global install: `npm install --global @agentmarket/cli@<version>`.
+- npx or MCP config: change the pinned `@agentmarket/cli` version.
+- Source checkout: update the source, run `npm ci`, then `npm run build`.
+- Verify with `agentmarket --version` and `agentmarket doctor --json`.
+
 ## Before you start
 
 1. Install the Binance Agentic Wallet CLI:
@@ -181,8 +188,35 @@ agentmarket tx execute --request-id <listRequestId> --confirm --json
 agentmarket market status --collection <collection> --token-id 0 --json
 ```
 
-Use `agentmarket tx status --tx-hash <txHash> --json` if you need to confirm the
-broadcast.
+Illustrative decoded `CollectionCreated` event (values are examples):
+
+```json
+{
+  "event": "CollectionCreated",
+  "args": {
+    "nft": "0x...",
+    "creator": "0x...",
+    "policy": "0x...",
+    "maxSupply": "100",
+    "metadataResolver": "0x..."
+  }
+}
+```
+
+After every execute, confirm success before the next step: run
+`agentmarket tx status --tx-hash <txHash> --json` until `SUCCESS`, or check the
+BscScan receipt status is `1`. Do not use `BROADCASTED` as completion.
+
+Results to check:
+
+| Step | Check |
+| --- | --- |
+| Create | `collection info`: `isRegistered: true`, expected creator/policy |
+| Mint | `nft info`: owner is the recipient; `collection info`: totalMinted increased |
+| Approve | `nft info`: expected approval state |
+| List | `market status`: `active: true`, seller, price |
+| Cancel | `market status`: `active: false` |
+| Buy | `nft info`: owner is wallet B |
 
 Batch mint is a separate form. Use the single-recipient form above or this one,
 not both for the same tokens:
@@ -196,6 +230,10 @@ agentmarket tx execute --request-id <batchMintRequestId> --confirm --json
 ### Buyer flow (wallet B)
 
 Switch BAW to wallet B, then:
+
+- keep `<collection>` and `tokenId` from the seller flow;
+- read the current BSC address and confirm it equals `<walletB>`;
+- recheck `doctor` eligibility and the BNB balance.
 
 ```bash
 agentmarket doctor --json
@@ -256,8 +294,9 @@ collection create --name <name> --symbol <symbol> --max-supply <n>
 ```
 
 Builds `AgenticNFTFactory.createCollection` and previews it. `maxSupply` must be
-greater than zero. `--metadata-uri` is the collection-level metadata JSON stored
-on-chain; it is not the per-token metadata. The `ipfs://bafy.../` values in the
+greater than zero. `--metadata-uri` is the URI of the collection-level metadata
+JSON. The chain stores the URI string, not the JSON; it is not the per-token
+metadata. The `ipfs://bafy.../` values in the
 example are placeholders. At least one of `--base-uri` or `--resolver` is
 required; a resolver-only collection may omit `--base-uri`. If both are set, the
 resolver takes precedence. `--policy` is optional; omitting it encodes the zero
@@ -322,8 +361,8 @@ Preflight, in order:
 1. the collection is registered in the NFT registry;
 2. the connected wallet owns the token;
 3. `--price` is positive BNB and is converted to wei;
-4. `--deadline` (when supplied) is a valid future Unix timestamp; omit it for no
-   expiry;
+4. `--deadline` (when supplied) is a valid future Unix timestamp in seconds;
+   omit it for no expiry;
 5. the market is approved for the token.
 
 If approval is missing, the command returns `status: "needsApproval"` with an
@@ -362,7 +401,9 @@ tx status --order-id <id>
 
 `--tx-hash` queries BAW's transaction history. `--order-id` reads the local
 journal written by `tx execute`. The BAW contract-call flow has no order lookup,
-so the journal is what makes order tracking possible.
+so the journal is what makes order tracking possible. Without a txHash,
+`--order-id` returns the last local record; it does not discover a new hash or
+refresh after the App confirms. Use `--tx-hash` for live status.
 
 ### `skill`
 
