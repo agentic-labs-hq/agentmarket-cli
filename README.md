@@ -103,7 +103,7 @@ same way, and run the command from the repository root.
 
    Check the result, not only `healthy`:
 
-   - `doctor.eligibility.eligible` must be `true`;
+   - `eligibility.eligible` must be `true`;
    - the `agent id eligible` check must be `ok`.
 
    `healthy: true` alone does not prove Agent ID eligibility. If
@@ -211,12 +211,15 @@ Results to check:
 
 | Step | Check |
 | --- | --- |
-| Create | `collection info`: `isRegistered: true`, expected creator/policy |
-| Mint | `nft info`: owner is the recipient; `collection info`: totalMinted increased |
-| Approve | `nft info`: expected approval state |
-| List | `market status`: `active: true`, seller, price |
-| Cancel | `market status`: `active: false` |
-| Buy | `nft info`: owner is wallet B |
+| Create | `collection info`: `registry.registered == true`; `collection.creator` and `collection.policy` as expected |
+| Mint | `nft info`: `nft.owner` is the recipient; `collection info`: `collection.totalMinted` increased |
+| Approve | `market status`: `approval.approvedForMarket == true`; check `approval.getApproved` or `approval.isApprovedForAll` for the approval type used |
+| List | `market status`: `listing.active == true`; `listing.seller`, `listing.priceWei`; check `executable` |
+| Cancel | `market status`: `listing.active == false` |
+| Buy | `nft info`: `nft.owner` is wallet B |
+
+The approval row covers Agentmarket only. A custom spender/operator needs
+`getApproved(tokenId)` or `isApprovedForAll(owner, operator)` on the collection.
 
 Batch mint is a separate form. Use the single-recipient form above or this one,
 not both for the same tokens:

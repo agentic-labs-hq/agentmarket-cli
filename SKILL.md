@@ -118,14 +118,17 @@ object from stdout.
    `SUCCESS`, or check that the BscScan receipt status is `1`. Stop on `FAILED`
    or an unknown status; do not run the next command.
 7. After success, check the business result before the next command:
-   - create: `collection info` returns `isRegistered: true` and the expected
-     creator;
-   - mint: `nft info` owner is the recipient; `collection info` totalMinted
-     increased;
-   - approve: `nft info` shows the expected approval state;
-   - list: `market status` shows `active: true`, seller, and price;
-   - cancel: `market status` shows `active: false`;
-   - buy: `nft info` owner is the buyer.
+   - create: `collection info` returns `registry.registered: true`,
+     `collection.creator`, and `collection.policy` as expected;
+   - mint: `nft info` `nft.owner` is the recipient; `collection info`
+     `collection.totalMinted` increased;
+   - approve: `market status` shows `approval.approvedForMarket: true`; check
+     `approval.getApproved` or `approval.isApprovedForAll` for the approval type
+     used;
+   - list: `market status` shows `listing.active: true`, `listing.seller`,
+     `listing.priceWei`, and `executable`;
+   - cancel: `market status` shows `listing.active: false`;
+   - buy: `nft info` `nft.owner` is the buyer.
 
 `--order-id` reads only the local journal. Without a txHash it does not discover
 a new hash or become a live chain status; use `--tx-hash`.
@@ -177,8 +180,8 @@ A decoded example:
 ```
 
 Then run `collection info` with the emitted address and confirm
-`isRegistered: true`, the expected creator, and the expected policy before
-minting.
+`registry.registered: true`, `collection.creator`, and `collection.policy`
+before minting.
 
 ## Minting
 
