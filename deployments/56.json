@@ -1,0 +1,19 @@
+{
+  "chainId": 56,
+  "network": "bsc-mainnet",
+  "name": "Agentmarket / Agentic Protocol",
+  "status": "deployed",
+  "startBlock": 130298566,
+  "rpcUrl": "https://bsc-dataseed.bnbchain.org",
+  "governance": "0x88Db9a7FCf2e8abc0dDa5Ed88248e1e73E8aaa35",
+  "nftRegistry": "0x5B2e805B276D9d756f5CacF58a4599eeCc8e3550",
+  "nftFactory": "0x9902405C5Ca9800AFE031af837C442a0F2aCaD62",
+  "agentmarket": "0x4e2aCC31a1dE4cA5DfeeD43956c607e46dd66982",
+  "treasury": "0xd06b024f0A7F9509D9cd85e5BC44abfb82E5b4A8",
+  "policy": "0xdb7FA5F2DDEaCF0Dbd7cd8ACa12A43A1050D4Ff7",
+  "identityAdapter": "0xbf820DaA0AD3a13a10C7D1d493F985DD1109F894",
+  "agentIdRegistry": "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F",
+  "policyRegistry": "0x7fb3A4a4df80C84a92F35B2fF356C6D201EDDc2A",
+  "venueRegistry": "0xD07B95112865f84a5563CDAB8CC69C0058784927",
+  "notes": "BSC mainnet book for Agentmarket. NFT protocol and Agentmarket are deployed and wired: the NFT factory is registered in the NFT registry, and the NFT facility factory is a CUSTODY/PURPOSE registrar. The CLI does not expose the facility factory; builders use it directly."
+}
