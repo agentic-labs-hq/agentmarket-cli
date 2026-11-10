@@ -1,6 +1,6 @@
 # Agentmarket CLI — skill
 
-Operational guide for agents using `@agentmarket/cli` 0.1.0. The CLI serves gated
+Operational guide for agents using `agentnftmarket` 0.1.0. The CLI serves gated
 NFT collections and the Agentmarket venue on BSC. It is non-custodial and
 preview-based: it builds calldata and asks Binance Agentic Wallet (`baw`) to
 preview it. This CLI never signs, never holds a private key, and never sends a
@@ -45,7 +45,7 @@ does not prove Agent ID eligibility; check `eligibility.eligible`.
 ## Invocation
 
 ```bash
-npx -y --package @agentmarket/cli@0.1.0 agentmarket doctor --json
+npx -y --package agentnftmarket@0.1.0 agentmarket doctor --json
 # or, when installed globally:
 agentmarket doctor --json
 ```

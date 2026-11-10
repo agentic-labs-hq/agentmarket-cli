@@ -1,5 +1,5 @@
 {
-  "name": "@agentmarket/cli",
+  "name": "agentnftmarket",
   "version": "0.1.0",
   "private": false,
   "description": "Agentmarket CLI and MCP server for gated NFT collections and marketplace operations on BSC through Binance Agentic Wallet.",

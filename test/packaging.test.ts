@@ -70,7 +70,7 @@ describe("public packaging", () => {
       files: string[];
       dependencies: Record<string, string>;
     };
-    expect(pkg.name).toBe("@agentmarket/cli");
+    expect(pkg.name).toBe("agentnftmarket");
     expect(pkg.version).toBe("0.1.0");
     expect(pkg.private).toBe(false);
     expect(pkg.bin.agentmarket).toBe("dist/cli.js");
@@ -93,7 +93,7 @@ describe("public packaging", () => {
       "Agentmarket CLI",
       "agentmarket tx execute",
       "needsApproval",
-      "npx -y --package @agentmarket/cli@0.1.0 agentmarket",
+      "npx -y --package agentnftmarket@0.1.0 agentmarket",
       "agentmarket doctor",
       ...MCP_TOOL_NAMES,
     ]) {

@@ -1,6 +1,6 @@
 # Agentmarket CLI
 
-`@agentmarket/cli` is the end-user and agent command-line interface for gated NFT
+`agentnftmarket` is the end-user and agent command-line interface for gated NFT
 collections and the Agentmarket venue on BNB Smart Chain (BSC). It also ships an
 MCP server (`agentmarket-mcp`) with one tool per command.
 
@@ -34,7 +34,7 @@ The Binance Agentic Wallet, wallet connection, Developer Mode and Agent ID are
 covered in [Before you start](#before-you-start).
 
 ```bash
-npm install --global @agentmarket/cli
+npm install --global agentnftmarket
 agentmarket --version
 agentmarket doctor --json
 ```
@@ -42,7 +42,7 @@ agentmarket doctor --json
 Or run without a global install:
 
 ```bash
-npx -y --package @agentmarket/cli@0.1.0 agentmarket doctor --json
+npx -y --package agentnftmarket@0.1.0 agentmarket doctor --json
 ```
 
 Or run from a source checkout:
@@ -59,8 +59,8 @@ same way, and run the command from the repository root.
 
 ### Upgrade
 
-- Global install: `npm install --global @agentmarket/cli@<version>`.
-- npx or MCP config: change the pinned `@agentmarket/cli` version.
+- Global install: `npm install --global agentnftmarket@<version>`.
+- npx or MCP config: change the pinned `agentnftmarket` version.
 - Source checkout: update the source, run `npm ci`, then `npm run build`.
 - Verify with `agentmarket --version` and `agentmarket doctor --json`.
 
@@ -520,7 +520,7 @@ Example client configuration:
   "mcpServers": {
     "agentmarket": {
       "command": "npx",
-      "args": ["-y", "--package", "@agentmarket/cli@0.1.0", "agentmarket-mcp"]
+      "args": ["-y", "--package", "agentnftmarket@0.1.0", "agentmarket-mcp"]
     }
   }
 }

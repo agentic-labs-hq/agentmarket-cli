@@ -41,7 +41,7 @@ for (const file of files) {
   }
 }
 
-if (pkg.name !== "@agentmarket/cli") {
+if (pkg.name !== "agentnftmarket") {
   throw new Error(`unexpected package name: ${pkg.name}`);
 }
 if (pkg.version !== "0.1.0") {
